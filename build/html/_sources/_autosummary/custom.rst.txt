@@ -14,6 +14,7 @@
    .. autosummary::
       :toctree:                                         
    
+      newfunction
       utility
    
    
