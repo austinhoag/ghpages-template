@@ -28,3 +28,13 @@ def utility(s):
 	:type s: str
 	"""
 	return s[::-1]
+
+def newfunction(x):
+	"""
+	A new function that should appear in the automatically
+	built documentation
+
+	:param x: A test parameter
+	:type x: int
+	"""
+	return x
