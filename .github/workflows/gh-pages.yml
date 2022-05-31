@@ -1,22 +1,19 @@
 name: GitHub Pages
 
-on:
-	push:
-		branches:
-			- "main"  # Set a branch name to trigger deployment
+on: push
 
 jobs:
-	deploy:
-		runs-on: ubuntu-20.04
-		permissions:
-			contents: write
-		concurrency:
-			group: ${{ github.workflow }}-${{ github.ref }}
+  deploy:
+	runs-on: ubuntu-20.04
+	permissions:
+	  contents: write
+	concurrency:
+	  group: ${{ github.workflow }}-${{ github.ref }}
 	steps:
 		- uses: actions/checkout@v3
 
 		- name: Upgrade pip
-		run: python3 -m pip install --upgrade pip
+		 run: python3 -m pip install --upgrade pip
 
 		- name: Install
 		run: pip install sphinx==5.0.0
@@ -28,5 +25,5 @@ jobs:
 		uses: peaceiris/actions-gh-pages@v3
 		if: ${{ github.ref == 'refs/heads/main' }}
 		with:
-			github_token: ${{ secrets.GITHUB_TOKEN }}
-			publish_dir: ./site
+		  github_token: ${{ secrets.GITHUB_TOKEN }}
+		  publish_dir: ./site
