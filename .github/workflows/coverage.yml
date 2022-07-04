@@ -1,42 +1,36 @@
-name: Coverage
+name: Tests
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches: 
+      - main 
 
 jobs:
-  deploy:
-    runs-on: ubuntu-20.04
-    permissions:
-      contents: write
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+
     steps:
-      - uses: actions/checkout@v2
-        with: 
-          fetch-depth: 0
-
-      - name: Coverage Badge
-        uses: tj-actions/coverage-badge-py@v1.8
-
-      - name: Verify Changed files
-        uses: tj-actions/verify-changed-files@v9
-        id: changed_files
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
         with:
-          files: coverage.svg
-
-      - name: Commit files
-        if: steps.changed_files.outputs.files_changed == 'true'
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add coverage.svg
-          git commit -m "Updated coverage.svg"
-
-      - name: Push changes
-        if: steps.changed_files.outputs.files_changed == 'true'
-        uses: ad-m/github-push-action@master
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+      - name: Test with pytest
+        run: |
+          pytest --cov=custom --cov-report xml tests/ 
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
         with:
-          github_token: ${{ secrets.github_token }}
-          branch: ${{ github.ref }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage.xml
